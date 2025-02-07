@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🏇 Horse Track Dash 🏇</title>
+    <style>
+        body {
+            font-family: "Courier New", Courier, monospace;
+            background-color: black;
+            color: #00FF00;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            background-color: #000;
+            padding: 20px;
+            border-radius: 8px;
+            width: 80%;
+            max-width: 600px;
+        }
+        .output {
+            margin: 10px 0;
+            white-space: pre-wrap;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div id="cli-output" class="output"></div>
+</div>
+
+<script>
+    const outputDiv = document.getElementById('cli-output');
+
+    const NUM_HORSES = 4;
+    const TRACK_LENGTH = 40;
+
+    function clearConsole() {
+        outputDiv.innerHTML = '';
+    }
+
+    function printTrack(horses) {
+        clearConsole();
+        outputDiv.innerHTML += "🏇 Horse Track Dash! 🏇\n";
+        for (let i = 0; i < NUM_HORSES; i++) {
+            let track = Array(TRACK_LENGTH).fill('-');
+            let position = horses[i];
+            if (position < TRACK_LENGTH) {
+                track[position] = '🐎';
+            } else {
+                track[TRACK_LENGTH - 1] = '🏁';
+            }
+            outputDiv.innerHTML += `Horse ${i + 1}: ` + track.join('') + '\n';
+        }
+        outputDiv.innerHTML += "\n" + "🌟".repeat(22) + '\n';
+    }
+
+    function slowPrint(message, delay = 50) {
+        return new Promise(resolve => {
+            let index = 0;
+            const interval = setInterval(() => {
+                if (index < message.length) {
+                    outputDiv.innerHTML += message[index];
+                    index++;
+                } else {
+                    clearInterval(interval);
+                    resolve();
+                }
+            }, delay);
+        });
+    }
+
+    async function delayBetweenMessages(delay) {
+        return new Promise(resolve => setTimeout(resolve, delay));
+    }
+
+    async function startHorseRace() {
+        await slowPrint("🕹️ Welcome to Horse Track Dash! 🕹️\n");
+        await delayBetweenMessages(1500);
+        await slowPrint("Press Enter to start the race...\n");
+
+        await waitForEnter();
+
+        let horses = Array(NUM_HORSES).fill(0);
+
+        while (Math.max(...horses) < TRACK_LENGTH) {
+            for (let i = 0; i < NUM_HORSES; i++) {
+                horses[i] += Math.floor(Math.random() * 3) + 1;
+            }
+
+            printTrack(horses);
+            await delayBetweenMessages(500);
+        }
+
+        const winner = horses.indexOf(Math.max(...horses)) + 1;
+        outputDiv.innerHTML =`\n🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉\n\n🏆 Horse ${winner} wins the race! 🏆\n\n🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉\n`;
+    }
+
+    function waitForEnter() {
+        return new Promise(resolve => {
+            document.addEventListener('keydown', function handler(e) {
+                if (e.key === 'Enter') {
+                    document.removeEventListener('keydown', handler);
+                    resolve();
+                }
+            });
+        });
+    }
+
+    window.onload = startHorseRace;
+</script>
+</body>
+</html>
